@@ -1,0 +1,7 @@
+{
+  "name": "Xtrema Waste Management",
+  "description": "An intelligent waste management platform that uses AI to categorize waste and helps users schedule eco-friendly pickups while earning rewards.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
