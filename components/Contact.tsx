@@ -1,17 +1,84 @@
 
 import React, { useState } from 'react';
-import { Send, Mail, MessageSquare, User, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Send, Mail, MessageSquare, User, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface ContactProps {
   onBack: () => void;
 }
 
+interface FormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+interface FormErrors {
+  name?: string;
+  email?: string;
+  subject?: string;
+  message?: string;
+}
+
 const Contact: React.FC<ContactProps> = ({ onBack }) => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validate = (): boolean => {
+    const newErrors: FormErrors = {};
+    
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Subject validation
+    if (!formData.subject.trim()) {
+      newErrors.subject = "Subject is required";
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      newErrors.message = "Message cannot be empty";
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = "Message must be at least 10 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error for this field when user types
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validate()) return;
+
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
@@ -84,52 +151,80 @@ const Contact: React.FC<ContactProps> = ({ onBack }) => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="md:col-span-3 p-10 space-y-6">
+        <form onSubmit={handleSubmit} className="md:col-span-3 p-10 space-y-6" noValidate>
           <div className="grid sm:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700 ml-1">Full Name</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <User className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${errors.name ? 'text-red-400' : 'text-slate-400'}`} />
                 <input 
-                  required
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   type="text" 
-                  placeholder="John Doe" 
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  placeholder="your name" 
+                  className={`w-full pl-10 pr-4 py-3 bg-slate-50 border rounded-xl outline-none transition-all ${errors.name ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500'}`}
                 />
               </div>
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1 ml-1 animate-in slide-in-from-top-1">
+                  <AlertCircle className="w-3 h-3" /> {errors.name}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-bold text-slate-700 ml-1">Email Address</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${errors.email ? 'text-red-400' : 'text-slate-400'}`} />
                 <input 
-                  required
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   type="email" 
-                  placeholder="john@example.com" 
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                  placeholder="mail" 
+                  className={`w-full pl-10 pr-4 py-3 bg-slate-50 border rounded-xl outline-none transition-all ${errors.email ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500'}`}
                 />
               </div>
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1 flex items-center gap-1 ml-1 animate-in slide-in-from-top-1">
+                  <AlertCircle className="w-3 h-3" /> {errors.email}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700 ml-1">Subject</label>
             <input 
-              required
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
               type="text" 
               placeholder="How can we help?" 
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+              className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none transition-all ${errors.subject ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500'}`}
             />
+            {errors.subject && (
+              <p className="text-red-500 text-xs mt-1 flex items-center gap-1 ml-1 animate-in slide-in-from-top-1">
+                <AlertCircle className="w-3 h-3" /> {errors.subject}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700 ml-1">Message</label>
             <textarea 
-              required
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               rows={4}
               placeholder="Your message here..." 
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none"
+              className={`w-full px-4 py-3 bg-slate-50 border rounded-xl outline-none transition-all resize-none ${errors.message ? 'border-red-500 ring-1 ring-red-500/20' : 'border-slate-200 focus:ring-2 focus:ring-emerald-500'}`}
             ></textarea>
+            {errors.message && (
+              <p className="text-red-500 text-xs mt-1 flex items-center gap-1 ml-1 animate-in slide-in-from-top-1">
+                <AlertCircle className="w-3 h-3" /> {errors.message}
+              </p>
+            )}
           </div>
 
           <button 
