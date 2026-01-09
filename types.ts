@@ -5,7 +5,9 @@ export enum View {
   REPORT = 'REPORT',
   PROFILE = 'PROFILE',
   POINTS = 'POINTS',
-  SCHEDULE = 'SCHEDULE'
+  SCHEDULE = 'SCHEDULE',
+  CONFIRMATION = 'CONFIRMATION',
+  CONTACT = 'CONTACT'
 }
 
 export interface WasteAnalysis {

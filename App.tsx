@@ -8,6 +8,8 @@ import Report from './components/Report';
 import Profile from './components/Profile';
 import Points from './components/Points';
 import Schedule from './components/Schedule';
+import Confirmation from './components/Confirmation';
+import Contact from './components/Contact';
 
 const DEFAULT_USER: User = {
   name: "xtrema ui dev",
@@ -39,6 +41,15 @@ const App: React.FC = () => {
     setCurrentView(View.REPORT);
   };
 
+  const handlePickupConfirmed = () => {
+    // Increment points by 150 as indicated in the confirmation screen
+    setUser(prevUser => ({
+      ...prevUser,
+      points: prevUser.points + 150
+    }));
+    setCurrentView(View.CONFIRMATION);
+  };
+
   const renderView = () => {
     switch (currentView) {
       case View.LOGIN:
@@ -54,12 +65,11 @@ const App: React.FC = () => {
       case View.POINTS:
         return <Points user={user} onEarnMore={() => setCurrentView(View.HOME)} />;
       case View.SCHEDULE:
-        return <Schedule onScheduled={() => {
-            // Show the requested confirmation message
-            alert("pickup confirmed");
-            // Navigate back to home
-            setCurrentView(View.HOME);
-        }} />;
+        return <Schedule onScheduled={handlePickupConfirmed} />;
+      case View.CONFIRMATION:
+        return <Confirmation onBackHome={() => setCurrentView(View.HOME)} />;
+      case View.CONTACT:
+        return <Contact onBack={() => setCurrentView(View.HOME)} />;
       default:
         return <Home onReportGenerated={handleReportGenerated} />;
     }

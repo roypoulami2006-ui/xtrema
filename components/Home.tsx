@@ -1,12 +1,32 @@
 
 import React, { useState, useRef } from 'react';
-import { Upload, Cloud, Image as ImageIcon, Loader2, X, FileImage, Search } from 'lucide-react';
+import { Upload, Image as ImageIcon, Loader2, X, Search } from 'lucide-react';
 import { analyzeWasteImage } from '../geminiService';
 import { WasteAnalysis } from '../types';
 
 interface HomeProps {
   onReportGenerated: (data: WasteAnalysis, imageUrl: string) => void;
 }
+
+const GoogleDriveIcon = ({ className = "w-10 h-10" }: { className?: string }) => (
+  <svg viewBox="0 0 2000 1732" className={className} xmlns="http://www.w3.org/2000/svg">
+    {/* Right Section - Yellow */}
+    <path d="M1333 0 L2000 1155 L1666 1732 L1000 577 L1333 0 Z" fill="#FFBA00" />
+    {/* Bottom Section - Blue */}
+    <path d="M333 1155 L2000 1155 L1666 1732 L0 1732 L333 1155 Z" fill="#2184F8" />
+    {/* Left Section - Green */}
+    <path d="M0 1732 L666 577 L1333 1732 L1000 1155 L0 1732 Z" fill="#00AC47" />
+    {/* Top Left Connection - Green (Standard Google Drive Construction) */}
+    <path d="M666 0 L1000 577 L666 1155 L0 1155 L666 0 Z" fill="#00AC47" />
+    {/* Re-mapping for perfect alignment as per reference */}
+    <g transform="translate(0,0)">
+      <path d="M666.67 0L1333.33 0L2000 1154.67L1666.67 1732L1000 577.33L666.67 0Z" fill="#FFBA00" />
+      <path d="M0 1154.67L333.33 577.33L1000 577.33L666.67 1154.67L0 1154.67Z" fill="#0066DA" opacity="0.1" /> {/* Subtle shadow overlap */}
+      <path d="M0 1154.67L666.67 0L1000 577.33L333.33 1732L0 1154.67Z" fill="#00AC47" />
+      <path d="M333.33 1154.67L2000 1154.67L1666.67 1732L333.33 1732L333.33 1154.67Z" fill="#2184F8" />
+    </g>
+  </svg>
+);
 
 const MOCK_DRIVE_FILES = [
   { id: 1, name: 'waste_collection_01.jpg', url: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=400', size: '2.4 MB' },
@@ -127,17 +147,17 @@ const Home: React.FC<HomeProps> = ({ onReportGenerated }) => {
             </div>
           ) : (
             <>
-              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110">
+              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 transition-transform group-hover:scale-110 shadow-sm border border-slate-50">
                 {isConnecting ? (
-                  <Loader2 className="text-blue-500 w-10 h-10 animate-spin" />
+                  <Loader2 className="text-slate-400 w-10 h-10 animate-spin" />
                 ) : (
-                  <Cloud className="text-blue-500 w-10 h-10" />
+                  <GoogleDriveIcon className="w-14 h-14" />
                 )}
               </div>
               <p className="text-slate-700 font-semibold mb-2">Import from Google Drive</p>
               <p className="text-slate-400 text-sm">Connect your cloud storage</p>
               <button 
-                className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-xl text-sm font-bold hover:bg-blue-600 shadow-lg shadow-blue-100 transition-all active:scale-95"
+                className="mt-6 px-6 py-2 bg-[#4285F4] text-white rounded-xl text-sm font-bold hover:bg-blue-600 shadow-lg shadow-blue-100 transition-all active:scale-95"
                 disabled={isConnecting}
               >
                 {isConnecting ? 'Connecting...' : 'Connect'}
@@ -177,8 +197,8 @@ const Home: React.FC<HomeProps> = ({ onReportGenerated }) => {
           <div className="bg-white w-full max-w-2xl rounded-[32px] shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                  <Cloud className="text-blue-500 w-6 h-6" />
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm border border-slate-50">
+                  <GoogleDriveIcon className="w-7 h-7" />
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Google Drive</h3>
